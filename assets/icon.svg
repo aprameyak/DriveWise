@@ -1,0 +1,41 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="512" cy="512" r="512" fill="#2563eb"/>
+  
+  <!-- Car body -->
+  <path d="M200 600 L824 600 L824 680 C824 720 790 750 750 750 L274 750 C234 750 200 720 200 680 L200 600 Z" fill="white"/>
+  
+  <!-- Car roof -->
+  <path d="M250 400 L774 400 L774 600 L250 600 L250 400 Z" fill="white"/>
+  
+  <!-- Windows -->
+  <path d="M280 420 L744 420 L744 580 L280 580 L280 420 Z" fill="#1e293b"/>
+  
+  <!-- Wheels -->
+  <circle cx="300" cy="750" r="60" fill="#1e293b"/>
+  <circle cx="724" cy="750" r="60" fill="#1e293b"/>
+  <circle cx="300" cy="750" r="40" fill="#64748b"/>
+  <circle cx="724" cy="750" r="40" fill="#64748b"/>
+  
+  <!-- Calculator/Chart elements -->
+  <rect x="350" y="300" width="324" height="200" rx="20" fill="#10b981" opacity="0.9"/>
+  
+  <!-- Chart bars -->
+  <rect x="380" y="380" width="30" height="80" fill="white"/>
+  <rect x="430" y="360" width="30" height="100" fill="white"/>
+  <rect x="480" y="340" width="30" height="120" fill="white"/>
+  <rect x="530" y="350" width="30" height="110" fill="white"/>
+  <rect x="580" y="370" width="30" height="90" fill="white"/>
+  <rect x="630" y="320" width="30" height="140" fill="white"/>
+  
+  <!-- Dollar sign -->
+  <text x="512" y="480" font-family="Arial, sans-serif" font-size="48" font-weight="bold" text-anchor="middle" fill="white">$</text>
+  
+  <!-- Optimization arrows -->
+  <path d="M150 200 L200 150 L250 200" stroke="white" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M774 200 L824 150 L874 200" stroke="white" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Headlights -->
+  <circle cx="220" cy="580" r="15" fill="#fbbf24"/>
+  <circle cx="804" cy="580" r="15" fill="#fbbf24"/>
+</svg>

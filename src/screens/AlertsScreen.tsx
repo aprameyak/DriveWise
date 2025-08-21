@@ -1,48 +1,45 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-
-// Mock alerts data
-const mockAlerts = [
-  {
-    id: '1',
-    type: 'price_change' as const,
-    title: 'Price Drop Alert',
-    message: '2019 Toyota Camry price dropped by $500',
-    priority: 'high' as const,
-    isRead: false,
-    createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
-  },
-  {
-    id: '2',
-    type: 'buy_window' as const,
-    title: 'Buy Window Open',
-    message: '2018 Subaru Outback is at optimal buying price',
-    priority: 'medium' as const,
-    isRead: true,
-    createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
-  },
-  {
-    id: '3',
-    type: 'sell_window' as const,
-    title: 'Sell Opportunity',
-    message: 'Your 2020 Mazda 3 has reached peak resale value',
-    priority: 'high' as const,
-    isRead: false,
-    createdAt: new Date(Date.now() - 6 * 60 * 60 * 1000), // 6 hours ago
-  },
-  {
-    id: '4',
-    type: 'maintenance' as const,
-    title: 'Maintenance Due',
-    message: '2019 Honda Accord needs oil change in 500 miles',
-    priority: 'low' as const,
-    isRead: true,
-    createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
-  },
-];
+import { useUserProfileStore } from '../store/userProfileStore';
+import { alertsService } from '../services/alertsService';
+import { Alert } from '../types';
 
 const AlertsScreen = () => {
+  const { profile } = useUserProfileStore();
+  const [alerts, setAlerts] = useState<Alert[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
+  useEffect(() => {
+    loadAlerts();
+  }, [profile]);
+
+  const loadAlerts = async () => {
+    if (!profile) return;
+    
+    setLoading(true);
+    try {
+      const newAlerts = await alertsService.generateAlerts(profile);
+      setAlerts(newAlerts);
+    } catch (error) {
+      console.error('Error loading alerts:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadAlerts();
+    setRefreshing(false);
+  };
+
+  const handleAlertPress = (alert: Alert) => {
+    alertsService.markAsRead(alert.id);
+    setAlerts(prev => prev.map(a => a.id === alert.id ? { ...a, isRead: true } : a));
+  };
+
   const getAlertIcon = (type: string) => {
     switch (type) {
       case 'price_change':
@@ -86,12 +83,30 @@ const AlertsScreen = () => {
     }
   };
 
+  if (!profile) {
+    return (
+      <View style={styles.centerContainer}>
+        <Text style={styles.title}>Alerts</Text>
+        <Text style={styles.subtitle}>Complete onboarding to receive alerts</Text>
+      </View>
+    );
+  }
+
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView 
+      contentContainerStyle={styles.container}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+    >
       <Text style={styles.title}>Alerts</Text>
-      {mockAlerts.length > 0 ? (
-        mockAlerts.map((alert) => (
-          <TouchableOpacity key={alert.id} style={[styles.alertCard, !alert.isRead && styles.unreadAlert]}>
+      {alerts.length > 0 ? (
+        alerts.map((alert) => (
+          <TouchableOpacity 
+            key={alert.id} 
+            style={[styles.alertCard, !alert.isRead && styles.unreadAlert]}
+            onPress={() => handleAlertPress(alert)}
+          >
             <View style={styles.alertHeader}>
               <View style={styles.alertIconContainer}>
                 <Ionicons 
@@ -128,11 +143,22 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8fafc',
     padding: 16,
   },
+  centerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 32,
+  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#1e293b',
     marginBottom: 16,
+    textAlign: 'center',
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#64748b',
     textAlign: 'center',
   },
   alertCard: {

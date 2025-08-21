@@ -1,10 +1,29 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
-import { ALL_CARS } from '../data/cars';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
+import { dataService } from '../services/dataService';
+import { CarData } from '../types';
 
 const DepreciationExplorerScreen = () => {
+  const [cars, setCars] = useState<CarData[]>([]);
   const [selectedCarIndex, setSelectedCarIndex] = useState<number | null>(null);
   const [explored, setExplored] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
+
+  useEffect(() => {
+    loadCars();
+  }, []);
+
+  const loadCars = async () => {
+    try {
+      const carData = await dataService.getCarData();
+      setCars(carData);
+    } catch (error) {
+      console.error('Error loading cars:', error);
+      Alert.alert('Error', 'Failed to load car data');
+    } finally {
+      setInitialLoading(false);
+    }
+  };
 
   const handleExplore = () => {
     if (selectedCarIndex === null) {
@@ -14,18 +33,27 @@ const DepreciationExplorerScreen = () => {
     setExplored(true);
   };
 
-  const car = selectedCarIndex !== null ? ALL_CARS[selectedCarIndex] : null;
+  const car = selectedCarIndex !== null ? cars[selectedCarIndex] : null;
   const depreciationData = car ? Object.entries(car.usedPrices).map(([mileage, value]) => ({
     mileage: Number(mileage),
     value: value as number,
   })) : [];
+
+  if (initialLoading) {
+    return (
+      <View style={styles.centerContainer}>
+        <ActivityIndicator size="large" color="#2563eb" />
+        <Text style={styles.loadingText}>Loading cars...</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
       <Text style={styles.title}>Depreciation Explorer</Text>
       <Text style={styles.label}>Select a Car:</Text>
       <View style={styles.carList}>
-        {ALL_CARS.map((car, idx) => (
+        {cars.map((car: CarData, idx: number) => (
           <TouchableOpacity
             key={car.make + car.model + car.year}
             style={[styles.carButton, selectedCarIndex === idx && styles.carButtonSelected]}
@@ -164,6 +192,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginTop: 24,
     textAlign: 'center',
+  },
+  centerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 32,
+  },
+  loadingText: {
+    marginTop: 16,
+    color: '#64748b',
+    fontSize: 16,
   },
 });
 

@@ -1,15 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, ScrollView, Alert } from 'react-native';
-import { ALL_CARS } from '../data/cars';
+import { useUserProfileStore } from '../store/userProfileStore';
+import { dataService } from '../services/dataService';
 import { calculateTCO } from '../utils/calculateTCO';
+import { CarData } from '../types';
 
 const TCOOptimizerScreen = () => {
+  const { profile } = useUserProfileStore();
+  const [cars, setCars] = useState<CarData[]>([]);
   const [selectedCarIndex, setSelectedCarIndex] = useState<number | null>(null);
-  const [annualMileage, setAnnualMileage] = useState('12000');
-  const [ownershipYears, setOwnershipYears] = useState('5');
-  const [zipCode, setZipCode] = useState('90001');
+  const [annualMileage, setAnnualMileage] = useState(profile?.annualMileage?.toString() || '12000');
+  const [ownershipYears, setOwnershipYears] = useState(profile?.ownershipDuration?.toString() || '5');
+  const [zipCode, setZipCode] = useState(profile?.zipCode || '90001');
   const [tcoResult, setTcoResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
+
+  useEffect(() => {
+    loadCars();
+  }, []);
+
+  const loadCars = async () => {
+    try {
+      const carData = await dataService.getCarData();
+      setCars(carData);
+    } catch (error) {
+      console.error('Error loading cars:', error);
+      Alert.alert('Error', 'Failed to load car data');
+    } finally {
+      setInitialLoading(false);
+    }
+  };
 
   const validateInputs = () => {
     if (selectedCarIndex === null) {
@@ -31,12 +52,13 @@ const TCOOptimizerScreen = () => {
     return true;
   };
 
-  const handleCalculate = () => {
+  const handleCalculate = async () => {
     if (!validateInputs()) return;
     setLoading(true);
-    setTimeout(() => {
-      const car = ALL_CARS[selectedCarIndex!];
-      const tco = calculateTCO({
+    
+    try {
+      const car = cars[selectedCarIndex!];
+      const tco = await calculateTCO({
         make: car.make,
         model: car.model,
         year: car.year,
@@ -46,16 +68,29 @@ const TCOOptimizerScreen = () => {
         zipCode,
       });
       setTcoResult(tco);
+    } catch (error) {
+      console.error('Error calculating TCO:', error);
+      Alert.alert('Error', 'Failed to calculate TCO. Please try again.');
+    } finally {
       setLoading(false);
-    }, 500);
+    }
   };
+
+  if (initialLoading) {
+    return (
+      <View style={styles.centerContainer}>
+        <ActivityIndicator size="large" color="#2563eb" />
+        <Text style={styles.loadingText}>Loading cars...</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
       <Text style={styles.title}>TCO Optimizer</Text>
       <Text style={styles.label}>Select a Car:</Text>
       <View style={styles.carList}>
-        {ALL_CARS.map((car, idx) => (
+        {cars.map((car: CarData, idx: number) => (
           <TouchableOpacity
             key={car.make + car.model + car.year}
             style={[styles.carButton, selectedCarIndex === idx && styles.carButtonSelected]}
@@ -218,6 +253,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginTop: 24,
     textAlign: 'center',
+  },
+  centerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 32,
+  },
+  loadingText: {
+    marginTop: 16,
+    color: '#64748b',
+    fontSize: 16,
   },
 });
 

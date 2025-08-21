@@ -1,15 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '../store/authStore';
+import { useUserProfileStore } from '../store/userProfileStore';
 
 const ProfileScreen = () => {
   const { user, logout } = useAuthStore();
+  const { profile, updateProfile } = useUserProfileStore();
   const [isEditing, setIsEditing] = useState(false);
   const [email, setEmail] = useState(user?.email || '');
-  const [zipCode, setZipCode] = useState('90001');
-  const [annualMileage, setAnnualMileage] = useState('12000');
+  const [zipCode, setZipCode] = useState(profile?.zipCode || '90001');
+  const [annualMileage, setAnnualMileage] = useState(profile?.annualMileage?.toString() || '12000');
+  const [ownershipDuration, setOwnershipDuration] = useState(profile?.ownershipDuration?.toString() || '5');
+  const [budgetMin, setBudgetMin] = useState(profile?.budgetRange?.min?.toString() || '15000');
+  const [budgetMax, setBudgetMax] = useState(profile?.budgetRange?.max?.toString() || '25000');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (profile) {
+      setZipCode(profile.zipCode);
+      setAnnualMileage(profile.annualMileage.toString());
+      setOwnershipDuration(profile.ownershipDuration.toString());
+      setBudgetMin(profile.budgetRange.min.toString());
+      setBudgetMax(profile.budgetRange.max.toString());
+    }
+  }, [profile]);
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -25,6 +40,16 @@ const ProfileScreen = () => {
     return !isNaN(num) && num > 0 && num <= 50000;
   };
 
+  const validateBudget = (budget: string) => {
+    const num = Number(budget);
+    return !isNaN(num) && num > 0 && num <= 100000;
+  };
+
+  const validateDuration = (duration: string) => {
+    const num = Number(duration);
+    return !isNaN(num) && num > 0 && num <= 20;
+  };
+
   const handleSave = () => {
     if (!validateEmail(email)) {
       Alert.alert('Validation Error', 'Please enter a valid email address.');
@@ -38,9 +63,34 @@ const ProfileScreen = () => {
       Alert.alert('Validation Error', 'Please enter a valid annual mileage (1-50,000).');
       return;
     }
+    if (!validateDuration(ownershipDuration)) {
+      Alert.alert('Validation Error', 'Please enter a valid ownership duration (1-20 years).');
+      return;
+    }
+    if (!validateBudget(budgetMin) || !validateBudget(budgetMax)) {
+      Alert.alert('Validation Error', 'Please enter valid budget amounts.');
+      return;
+    }
+    if (Number(budgetMin) >= Number(budgetMax)) {
+      Alert.alert('Validation Error', 'Minimum budget must be less than maximum budget.');
+      return;
+    }
 
     setLoading(true);
-    // Simulate save operation
+    
+    // Update profile
+    if (profile) {
+      updateProfile({
+        zipCode,
+        annualMileage: Number(annualMileage),
+        ownershipDuration: Number(ownershipDuration),
+        budgetRange: {
+          min: Number(budgetMin),
+          max: Number(budgetMax),
+        },
+      });
+    }
+
     setTimeout(() => {
       setLoading(false);
       setIsEditing(false);
@@ -103,6 +153,42 @@ const ProfileScreen = () => {
             value={annualMileage}
             onChangeText={setAnnualMileage}
             placeholder="Enter annual mileage"
+            keyboardType="numeric"
+            editable={isEditing}
+          />
+        </View>
+
+        <View style={styles.fieldContainer}>
+          <Text style={styles.fieldLabel}>Ownership Duration (years):</Text>
+          <TextInput
+            style={[styles.input, !isEditing && styles.disabledInput]}
+            value={ownershipDuration}
+            onChangeText={setOwnershipDuration}
+            placeholder="Enter ownership duration"
+            keyboardType="numeric"
+            editable={isEditing}
+          />
+        </View>
+
+        <View style={styles.fieldContainer}>
+          <Text style={styles.fieldLabel}>Minimum Budget ($):</Text>
+          <TextInput
+            style={[styles.input, !isEditing && styles.disabledInput]}
+            value={budgetMin}
+            onChangeText={setBudgetMin}
+            placeholder="Enter minimum budget"
+            keyboardType="numeric"
+            editable={isEditing}
+          />
+        </View>
+
+        <View style={styles.fieldContainer}>
+          <Text style={styles.fieldLabel}>Maximum Budget ($):</Text>
+                      <TextInput
+            style={[styles.input, !isEditing && styles.disabledInput]}
+            value={budgetMax}
+            onChangeText={setBudgetMax}
+            placeholder="Enter maximum budget"
             keyboardType="numeric"
             editable={isEditing}
           />

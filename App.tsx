@@ -16,6 +16,7 @@ import ProfileScreen from './src/screens/ProfileScreen';
 
 // Import auth store
 import { useAuthStore } from './src/store/authStore';
+import { useUserProfileStore } from './src/store/userProfileStore';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -100,6 +101,7 @@ const TabNavigator = () => {
 
 const AuthNavigator = () => {
   const { isAuthenticated } = useAuthStore();
+  const { isOnboarded } = useUserProfileStore();
 
   return (
     <Stack.Navigator
@@ -112,6 +114,8 @@ const AuthNavigator = () => {
           <Stack.Screen name="Onboarding" component={OnboardingScreen} />
           <Stack.Screen name="Login" component={LoginScreen} />
         </>
+      ) : !isOnboarded ? (
+        <Stack.Screen name="Onboarding" component={OnboardingScreen} />
       ) : (
         <>
           <Stack.Screen name="Main" component={TabNavigator} />

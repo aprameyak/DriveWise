@@ -12,10 +12,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SPACING, BORDER_RADIUS, USAGE_TYPES, MAINTENANCE_TOLERANCE } from '../constants';
 import { useAuthStore } from '../store/authStore';
+import { useUserProfileStore } from '../store/userProfileStore';
 import { UserProfile } from '../types';
 
 const OnboardingScreen = () => {
   const { user } = useAuthStore();
+  const { setProfile } = useUserProfileStore();
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({
     annualMileage: '',
@@ -97,8 +99,7 @@ const OnboardingScreen = () => {
       updatedAt: new Date(),
     };
 
-    // setUserProfile(userProfile); // This line was removed as per the edit hint
-    // setOnboarded(true); // This line was removed as per the edit hint
+    setProfile(userProfile);
   };
 
   const renderStepContent = () => {
