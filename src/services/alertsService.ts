@@ -50,12 +50,12 @@ class AlertsService {
       const car = cars.find(c => `${c.make.toLowerCase()}-${c.model.toLowerCase()}-${c.year}` === change.carId);
       if (car) {
         alerts.push({
-          id: `price-${Date.now()}-${carId}`,
+          id: `price-${Date.now()}-${car.id}`,
           type: 'price_change',
-          title: 'Price Drop Alert',
-          message: `${car.year} ${car.make} ${car.model} price ${change.change > 0 ? 'increased' : 'dropped'} by $${Math.abs(change.change)}`,
-          carId: change.carId,
-          priority: Math.abs(change.percentage) > 3 ? 'high' : 'medium',
+          title: 'Price Change Alert',
+          message: `${car.make} ${car.model} ${car.year} price has ${change.direction} by ${change.percentage}%`,
+          carId: car.id,
+          priority: 'medium',
           isRead: false,
           createdAt: new Date(),
         });

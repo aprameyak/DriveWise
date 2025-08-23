@@ -44,10 +44,10 @@ export async function calculateTCO(input: TCOInput): Promise<TCOOutput | null> {
     const depreciation = car.msrp - interpolate(car.usedPrices, ownershipMiles);
 
     // Fuel costs - use dynamic fuel prices
-    const fuelType = car.model.toLowerCase().includes('hybrid') ? 'electric' : 
-                    car.model.toLowerCase().includes('diesel') ? 'diesel' : 'gasoline';
+    const fuelType = car.model.toLowerCase().includes('hybrid') ? 'electric' :
+                     car.model.toLowerCase().includes('diesel') ? 'diesel' : 'gasoline';
     const fuelPrice = fuelPrices[fuelType];
-    const fuel = ((input.annualMileage / car.mpg) * fuelPrice * input.ownershipYears);
+    const fuel = ((input.annualMileage / car.mpg.combined) * fuelPrice * input.ownershipYears);
 
     // Maintenance
     const maintenance = interpolate(car.maintenanceByMileage, ownershipMiles);

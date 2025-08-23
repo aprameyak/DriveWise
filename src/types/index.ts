@@ -23,15 +23,44 @@ export interface TCOOutput {
 }
 
 export interface CarData {
+  id: string;
   make: string;
   model: string;
   year: number;
+  price: number;
   msrp: number;
+  image: string;
+  fuelType: 'Gasoline' | 'Hybrid' | 'Electric' | 'Diesel';
+  mpg: {
+    city: number;
+    highway: number;
+    combined: number;
+  };
+  size: 'Compact' | 'Midsize' | 'Full-size' | 'SUV' | 'Truck' | 'Luxury';
+  reliability: number; // 1-10 scale
+  safetyRating: number; // 1-5 scale
+  features: string[];
   usedPrices: Record<string, number>; // mileage -> price
-  mpg: number;
   maintenanceByMileage: Record<string, number>; // mileage -> maintenance cost
   insuranceByState: Record<string, number>; // state -> annual insurance
   taxRate: number;
+  depreciation: DepreciationPoint[];
+  tcoData: TCOData;
+}
+
+export interface DepreciationPoint {
+  year: number;
+  value: number;
+  percentage: number;
+}
+
+export interface TCOData {
+  depreciation: number;
+  fuelCosts: number;
+  insurance: number;
+  maintenance: number;
+  financing: number;
+  total: number;
 }
 
 export interface UserProfile {
@@ -102,4 +131,19 @@ export interface NavigationProps {
   Profile: undefined;
 }
 
-export type RootStackParamList = NavigationProps; 
+export type RootStackParamList = NavigationProps;
+
+export interface UserPreferences {
+  budget: {
+    min: number;
+    max: number;
+  };
+  fuelType: string[];
+  size: string[];
+  priorityFactors: {
+    fuel: number;
+    reliability: number;
+    safety: number;
+    depreciation: number;
+  };
+} 
