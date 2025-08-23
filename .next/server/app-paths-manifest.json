@@ -1,0 +1,5 @@
+{
+  "/support/page": "app/support/page.js",
+  "/page": "app/page.js",
+  "/privacy/page": "app/privacy/page.js"
+}
