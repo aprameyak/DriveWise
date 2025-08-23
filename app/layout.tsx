@@ -11,11 +11,24 @@ export const metadata: Metadata = {
   keywords: 'car recommendations, TCO, total cost of ownership, car comparison, automotive, car buying',
   authors: [{ name: 'DriveWise Team' }],
   robots: 'index, follow',
+  icons: {
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg',
+  },
   openGraph: {
     title: 'DriveWise - Smart Car Recommendations',
     description: 'Make informed car buying decisions with DriveWise',
     type: 'website',
     locale: 'en_US',
+    images: [
+      {
+        url: '/favicon.svg',
+        width: 1024,
+        height: 1024,
+        alt: 'DriveWise Logo',
+      },
+    ],
   },
 }
 
