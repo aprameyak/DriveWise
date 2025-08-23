@@ -37,13 +37,6 @@ export default function HomePage() {
                 <Download className="w-5 h-5" />
                 <span>Download for iOS</span>
               </a>
-              <a 
-                href="#" 
-                className="bg-white text-primary-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors flex items-center space-x-2"
-              >
-                <Download className="w-5 h-5" />
-                <span>Download for Android</span>
-              </a>
             </div>
           </div>
         </div>
