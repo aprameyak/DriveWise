@@ -2,6 +2,7 @@ import { CarData } from '../types';
 
 // API endpoints
 const NHTSA_BASE_URL = 'https://vpic.nhtsa.dot.gov/api';
+const CARQUERY_BASE_URL = 'https://www.carqueryapi.com/api/1.0';
 
 export interface FuelPriceData {
   gasoline: number;
@@ -41,6 +42,52 @@ interface NHTSAVehicleType {
   VehicleTypeName: string;
 }
 
+interface CarQueryMake {
+  make_id: string;
+  make_display: string;
+  make_country: string;
+  make_is_common: string;
+}
+
+interface CarQueryModel {
+  model_id: string;
+  model_make_id: string;
+  model_name: string;
+  model_trim: string;
+  model_year: string;
+  model_body: string;
+  model_engine_position: string;
+  model_engine_cc: string;
+  model_engine_cyl: string;
+  model_engine_type: string;
+  model_engine_valves_per_cyl: string;
+  model_engine_power_ps: string;
+  model_engine_power_rpm: string;
+  model_engine_torque_nm: string;
+  model_engine_torque_rpm: string;
+  model_engine_bore_mm: string;
+  model_engine_stroke_mm: string;
+  model_engine_compression: string;
+  model_engine_fuel: string;
+  model_top_speed_kph: string;
+  model_0_to_100_kph: string;
+  model_drive: string;
+  model_transmission_type: string;
+  model_seats: string;
+  model_doors: string;
+  model_weight_kg: string;
+  model_length_mm: string;
+  model_width_mm: string;
+  model_height_mm: string;
+  model_wheelbase_mm: string;
+  model_lkm_city: string;
+  model_lkm_highway: string;
+  model_fuel_cap_l: string;
+  model_sold_in_us: string;
+  model_co2: string;
+  model_make_display: string;
+}
+
 class DataService {
   private fuelPrices: FuelPriceData | null = null;
   private insuranceRates: InsuranceRateData[] = [];
@@ -55,95 +102,263 @@ class DataService {
     }
 
     try {
-      console.log('Fetching car data from NHTSA API...');
+      console.log('Fetching car data from NHTSA and CarQuery APIs...');
       
-      // Get popular makes
-      const popularMakes = ['Toyota', 'Honda', 'Ford', 'BMW', 'Tesla', 'Hyundai', 'Mazda', 'Subaru'];
       const cars: CarData[] = [];
       
-      for (const makeName of popularMakes) {
+      // Try CarQuery API first (more comprehensive data)
+      try {
+        const carQueryCars = await this.fetchFromCarQuery();
+        cars.push(...carQueryCars);
+        console.log(`Fetched ${carQueryCars.length} cars from CarQuery API`);
+      } catch (error) {
+        console.warn('CarQuery API failed, falling back to NHTSA:', error);
+      }
+      
+      // If CarQuery didn't provide enough data, supplement with NHTSA
+      if (cars.length < 20) {
         try {
-          // Get models for this make
-          const modelsResponse = await fetch(
-            `${NHTSA_BASE_URL}/vehicles/GetModelsForMake/${makeName}?format=json`
-          );
+          const nhtsaCars = await this.fetchFromNHTSA();
+          cars.push(...nhtsaCars);
+          console.log(`Fetched ${nhtsaCars.length} additional cars from NHTSA API`);
+        } catch (error) {
+          console.warn('NHTSA API failed:', error);
+        }
+      }
+      
+      // Remove duplicates and limit to reasonable number
+      const uniqueCars = this.removeDuplicates(cars);
+      this.carData = uniqueCars.slice(0, 50); // Limit to 50 cars
+      this.lastFetch = new Date();
+      
+      console.log(`Successfully fetched ${this.carData.length} unique cars from APIs`);
+      return this.carData;
+      
+    } catch (error) {
+      console.warn('Failed to fetch car data from APIs, using fallback:', error);
+      // Fallback to mock data
+      const { ALL_CARS } = await import('../data/cars');
+      return ALL_CARS;
+    }
+  }
+
+  private async fetchFromCarQuery(): Promise<CarData[]> {
+    const cars: CarData[] = [];
+    
+    // Get popular makes from CarQuery
+    const popularMakes = ['Toyota', 'Honda', 'Ford', 'BMW', 'Tesla', 'Hyundai', 'Mazda', 'Subaru', 'Audi', 'Mercedes-Benz'];
+    
+    for (const makeName of popularMakes) {
+      try {
+        // Get models for this make
+        const modelsResponse = await fetch(
+          `${CARQUERY_BASE_URL}/?cmd=getModels&make=${encodeURIComponent(makeName)}&year=2024`
+        );
+        
+        if (!modelsResponse.ok) {
+          console.warn(`Failed to fetch models for ${makeName} from CarQuery`);
+          continue;
+        }
+        
+        const modelsData = await modelsResponse.json();
+        
+        if (modelsData.Models && modelsData.Models.length > 0) {
+          // Take the first few models for each make
+          const modelsToProcess = modelsData.Models.slice(0, 4);
           
-          if (!modelsResponse.ok) {
-            console.warn(`Failed to fetch models for ${makeName}`);
-            continue;
-          }
-          
-          const modelsData = await modelsResponse.json();
-          
-          if (modelsData.Results && modelsData.Results.length > 0) {
-            // Take the first few models for each make
-            const modelsToProcess = modelsData.Results.slice(0, 3);
-            
-            for (const model of modelsToProcess) {
-              try {
-                // Get vehicle types for this make/model
-                const vehicleTypesResponse = await fetch(
-                  `${NHTSA_BASE_URL}/vehicles/GetVehicleTypesForMakeId/${model.Make_ID}?format=json`
-                );
+          for (const model of modelsToProcess) {
+            try {
+              // Get detailed specs for this model
+              const specsResponse = await fetch(
+                `${CARQUERY_BASE_URL}/?cmd=getTrims&make=${encodeURIComponent(makeName)}&model=${encodeURIComponent(model.model_name)}&year=2024`
+              );
+              
+              if (specsResponse.ok) {
+                const specsData = await specsResponse.json();
                 
-                if (vehicleTypesResponse.ok) {
-                  const vehicleTypesData = await vehicleTypesResponse.json();
+                if (specsData.Trims && specsData.Trims.length > 0) {
+                  const trim = specsData.Trims[0]; // Use first trim for specs
                   
                   // Create car data for different years
                   const years = [2024, 2023, 2022];
                   
                   for (const year of years) {
                     const car: CarData = {
-                      id: `${makeName}-${model.Model_Name}-${year}`,
+                      id: `${makeName}-${model.model_name}-${year}`,
                       make: makeName,
-                      model: model.Model_Name,
+                      model: model.model_name,
                       year: year,
-                      price: this.estimatePrice(makeName, model.Model_Name, year),
-                      msrp: this.estimateMSRP(makeName, model.Model_Name, year),
-                      image: this.getCarImage(makeName, model.Model_Name),
-                      fuelType: this.determineFuelType(makeName, model.Model_Name),
-                      mpg: this.estimateMPG(makeName, model.Model_Name),
-                      size: this.determineSize(makeName, model.Model_Name),
+                      price: this.estimatePrice(makeName, model.model_name, year),
+                      msrp: this.estimateMSRP(makeName, model.model_name, year),
+                      image: this.getCarImage(makeName, model.model_name),
+                      fuelType: this.determineFuelTypeFromCarQuery(trim),
+                      mpg: this.estimateMPGFromCarQuery(trim, makeName),
+                      size: this.determineSizeFromCarQuery(trim, makeName),
                       reliability: this.estimateReliability(makeName),
                       safetyRating: this.estimateSafetyRating(makeName),
-                      features: this.getDefaultFeatures(makeName, model.Model_Name),
-                      usedPrices: this.generateUsedPrices(makeName, model.Model_Name, year),
-                      maintenanceByMileage: this.generateMaintenanceCosts(makeName, model.Model_Name),
-                      insuranceByState: this.generateInsuranceRates(makeName, model.Model_Name),
+                      features: this.getDefaultFeatures(makeName, model.model_name),
+                      usedPrices: this.generateUsedPrices(makeName, model.model_name, year),
+                      maintenanceByMileage: this.generateMaintenanceCosts(makeName, model.model_name),
+                      insuranceByState: this.generateInsuranceRates(makeName, model.model_name),
                       taxRate: 0.08,
-                      depreciation: this.generateDepreciation(makeName, model.Model_Name, year),
-                      tcoData: this.generateTCOData(makeName, model.Model_Name, year),
+                      depreciation: this.generateDepreciation(makeName, model.model_name, year),
+                      tcoData: this.generateTCOData(makeName, model.model_name, year),
                     };
                     
                     cars.push(car);
                   }
                 }
-              } catch (error) {
-                console.warn(`Error processing model ${model.Model_Name}:`, error);
               }
+              
+              // Add delay to respect rate limits
+              await new Promise(resolve => setTimeout(resolve, 200));
+              
+            } catch (error) {
+              console.warn(`Error processing CarQuery model ${model.model_name}:`, error);
             }
           }
-          
-          // Add delay to respect rate limits
-          await new Promise(resolve => setTimeout(resolve, 100));
-          
-        } catch (error) {
-          console.warn(`Error fetching data for make ${makeName}:`, error);
         }
+        
+      } catch (error) {
+        console.warn(`Error fetching data for make ${makeName} from CarQuery:`, error);
       }
-      
-      this.carData = cars;
-      this.lastFetch = new Date();
-      
-      console.log(`Successfully fetched ${cars.length} cars from NHTSA API`);
-      return cars;
-      
-    } catch (error) {
-      console.warn('Failed to fetch car data from NHTSA, using fallback:', error);
-      // Fallback to mock data
-      const { ALL_CARS } = await import('../data/cars');
-      return ALL_CARS;
     }
+    
+    return cars;
+  }
+
+  private async fetchFromNHTSA(): Promise<CarData[]> {
+    const cars: CarData[] = [];
+    
+    // Get popular makes
+    const popularMakes = ['Toyota', 'Honda', 'Ford', 'BMW', 'Tesla', 'Hyundai', 'Mazda', 'Subaru'];
+    
+    for (const makeName of popularMakes) {
+      try {
+        // Get models for this make
+        const modelsResponse = await fetch(
+          `${NHTSA_BASE_URL}/vehicles/GetModelsForMake/${makeName}?format=json`
+        );
+        
+        if (!modelsResponse.ok) {
+          console.warn(`Failed to fetch models for ${makeName}`);
+          continue;
+        }
+        
+        const modelsData = await modelsResponse.json();
+        
+        if (modelsData.Results && modelsData.Results.length > 0) {
+          // Take the first few models for each make
+          const modelsToProcess = modelsData.Results.slice(0, 3);
+          
+          for (const model of modelsToProcess) {
+            try {
+              // Get vehicle types for this make/model
+              const vehicleTypesResponse = await fetch(
+                `${NHTSA_BASE_URL}/vehicles/GetVehicleTypesForMakeId/${model.Make_ID}?format=json`
+              );
+              
+              if (vehicleTypesResponse.ok) {
+                const vehicleTypesData = await vehicleTypesResponse.json();
+                
+                // Create car data for different years
+                const years = [2024, 2023, 2022];
+                
+                for (const year of years) {
+                  const car: CarData = {
+                    id: `${makeName}-${model.Model_Name}-${year}`,
+                    make: makeName,
+                    model: model.Model_Name,
+                    year: year,
+                    price: this.estimatePrice(makeName, model.Model_Name, year),
+                    msrp: this.estimateMSRP(makeName, model.Model_Name, year),
+                    image: this.getCarImage(makeName, model.Model_Name),
+                    fuelType: this.determineFuelType(makeName, model.Model_Name),
+                    mpg: this.estimateMPG(makeName, model.Model_Name),
+                    size: this.determineSize(makeName, model.Model_Name),
+                    reliability: this.estimateReliability(makeName),
+                    safetyRating: this.estimateSafetyRating(makeName),
+                    features: this.getDefaultFeatures(makeName, model.Model_Name),
+                    usedPrices: this.generateUsedPrices(makeName, model.Model_Name, year),
+                    maintenanceByMileage: this.generateMaintenanceCosts(makeName, model.Model_Name),
+                    insuranceByState: this.generateInsuranceRates(makeName, model.Model_Name),
+                    taxRate: 0.08,
+                    depreciation: this.generateDepreciation(makeName, model.Model_Name, year),
+                    tcoData: this.generateTCOData(makeName, model.Model_Name, year),
+                  };
+                  
+                  cars.push(car);
+                }
+              }
+            } catch (error) {
+              console.warn(`Error processing NHTSA model ${model.Model_Name}:`, error);
+            }
+          }
+        }
+        
+        // Add delay to respect rate limits
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+      } catch (error) {
+        console.warn(`Error fetching data for make ${makeName} from NHTSA:`, error);
+      }
+    }
+    
+    return cars;
+  }
+
+  private removeDuplicates(cars: CarData[]): CarData[] {
+    const seen = new Set<string>();
+    return cars.filter(car => {
+      const key = `${car.make}-${car.model}-${car.year}`;
+      if (seen.has(key)) {
+        return false;
+      }
+      seen.add(key);
+      return true;
+    });
+  }
+
+  private determineFuelTypeFromCarQuery(trim: CarQueryModel): 'Gasoline' | 'Hybrid' | 'Electric' | 'Diesel' {
+    const fuel = trim.model_engine_fuel?.toLowerCase() || '';
+    if (fuel.includes('electric')) return 'Electric';
+    if (fuel.includes('hybrid')) return 'Hybrid';
+    if (fuel.includes('diesel')) return 'Diesel';
+    return 'Gasoline';
+  }
+
+  private estimateMPGFromCarQuery(trim: CarQueryModel, make: string): { city: number; highway: number; combined: number } {
+    // Try to get real MPG data from CarQuery
+    const cityLkm = parseFloat(trim.model_lkm_city || '0');
+    const highwayLkm = parseFloat(trim.model_lkm_highway || '0');
+    
+    if (cityLkm > 0 && highwayLkm > 0) {
+      // Convert L/100km to MPG
+      const cityMPG = Math.round(235.214 / cityLkm);
+      const highwayMPG = Math.round(235.214 / highwayLkm);
+      const combinedMPG = Math.round((cityMPG + highwayMPG) / 2);
+      
+      return {
+        city: cityMPG,
+        highway: highwayMPG,
+        combined: combinedMPG,
+      };
+    }
+    
+    // Fallback to estimation
+    return this.estimateMPG(make, '');
+  }
+
+  private determineSizeFromCarQuery(trim: CarQueryModel, make: string): 'Compact' | 'Midsize' | 'Full-size' | 'SUV' | 'Truck' | 'Luxury' {
+    const body = trim.model_body?.toLowerCase() || '';
+    const seats = parseInt(trim.model_seats || '5');
+    
+    if (make === 'BMW' || make === 'Mercedes-Benz' || make === 'Audi') return 'Luxury';
+    if (body.includes('suv') || body.includes('crossover')) return 'SUV';
+    if (body.includes('truck') || body.includes('pickup')) return 'Truck';
+    if (seats >= 7) return 'Full-size';
+    if (seats <= 4) return 'Compact';
+    return 'Midsize';
   }
 
   async getFuelPrices(): Promise<FuelPriceData> {
@@ -230,6 +445,8 @@ class DataService {
       'Hyundai': 25000,
       'Mazda': 27000,
       'Subaru': 30000,
+      'Audi': 42000,
+      'Mercedes-Benz': 48000,
     };
     
     const basePrice = basePrices[make] || 30000;
@@ -252,6 +469,8 @@ class DataService {
       'Hyundai': 'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=500',
       'Mazda': 'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=500',
       'Subaru': 'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=500',
+      'Audi': 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=500',
+      'Mercedes-Benz': 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=500',
     };
     
     return imageMap[make] || 'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=500';
@@ -275,6 +494,8 @@ class DataService {
       'Hyundai': 33,
       'Mazda': 30,
       'Subaru': 28,
+      'Audi': 28,
+      'Mercedes-Benz': 26,
     };
     
     const combined = baseMPG[make] || 30;
@@ -286,7 +507,7 @@ class DataService {
   }
 
   private determineSize(make: string, model: string): 'Compact' | 'Midsize' | 'Full-size' | 'SUV' | 'Truck' | 'Luxury' {
-    if (make === 'BMW') return 'Luxury';
+    if (make === 'BMW' || make === 'Audi' || make === 'Mercedes-Benz') return 'Luxury';
     if (make === 'Ford' && model.toLowerCase().includes('f-')) return 'Truck';
     if (model.toLowerCase().includes('suv') || model.toLowerCase().includes('cr-v')) return 'SUV';
     return 'Midsize';
@@ -302,6 +523,8 @@ class DataService {
       'Hyundai': 8,
       'Mazda': 8,
       'Subaru': 8,
+      'Audi': 6,
+      'Mercedes-Benz': 6,
     };
     
     return reliabilityScores[make] || 7;
@@ -317,6 +540,8 @@ class DataService {
       'Hyundai': 4,
       'Mazda': 4,
       'Subaru': 5,
+      'Audi': 5,
+      'Mercedes-Benz': 5,
     };
     
     return safetyScores[make] || 4;
@@ -325,7 +550,7 @@ class DataService {
   private getDefaultFeatures(make: string, model: string): string[] {
     const baseFeatures = ['Backup Camera', 'Bluetooth'];
     
-    if (make === 'BMW' || make === 'Tesla') {
+    if (make === 'BMW' || make === 'Audi' || make === 'Mercedes-Benz' || make === 'Tesla') {
       return [...baseFeatures, 'Navigation', 'Premium Audio', 'Leather Seats'];
     }
     
@@ -347,7 +572,7 @@ class DataService {
   }
 
   private generateMaintenanceCosts(make: string, model: string): Record<string, number> {
-    const baseCost = make === 'BMW' ? 1200 : make === 'Tesla' ? 300 : 600;
+    const baseCost = make === 'BMW' || make === 'Audi' || make === 'Mercedes-Benz' ? 1200 : make === 'Tesla' ? 300 : 600;
     return {
       "20000": baseCost,
       "40000": baseCost * 2,
@@ -357,7 +582,7 @@ class DataService {
   }
 
   private generateInsuranceRates(make: string, model: string): Record<string, number> {
-    const baseRate = make === 'BMW' ? 2500 : make === 'Tesla' ? 2000 : 1600;
+    const baseRate = make === 'BMW' || make === 'Audi' || make === 'Mercedes-Benz' ? 2500 : make === 'Tesla' ? 2000 : 1600;
     return {
       "CA": baseRate,
       "TX": baseRate * 0.9,
@@ -367,7 +592,7 @@ class DataService {
 
   private generateDepreciation(make: string, model: string, year: number): Array<{ year: number; value: number; percentage: number }> {
     const basePrice = this.estimatePrice(make, model, year);
-    const depreciationRate = make === 'BMW' ? 0.24 : make === 'Tesla' ? 0.20 : 0.15;
+    const depreciationRate = make === 'BMW' || make === 'Audi' || make === 'Mercedes-Benz' ? 0.24 : make === 'Tesla' ? 0.20 : 0.15;
     
     return [
       { year: 0, value: basePrice, percentage: 0 },
@@ -383,8 +608,8 @@ class DataService {
     const basePrice = this.estimatePrice(make, model, year);
     const depreciation = basePrice * 0.4;
     const fuelCosts = make === 'Tesla' ? 3200 : 8500;
-    const insurance = make === 'BMW' ? 8500 : make === 'Tesla' ? 7200 : 6000;
-    const maintenance = make === 'BMW' ? 7500 : make === 'Tesla' ? 2800 : 4200;
+    const insurance = make === 'BMW' || make === 'Audi' || make === 'Mercedes-Benz' ? 8500 : make === 'Tesla' ? 7200 : 6000;
+    const maintenance = make === 'BMW' || make === 'Audi' || make === 'Mercedes-Benz' ? 7500 : make === 'Tesla' ? 2800 : 4200;
     const financing = basePrice * 0.08;
     const total = depreciation + fuelCosts + insurance + maintenance + financing;
     
