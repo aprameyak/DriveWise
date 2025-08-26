@@ -12,8 +12,9 @@ import {
   Download,
   Star
 } from 'lucide-react'
+import type { HomePageProps } from '../types'
 
-export default function HomePage() {
+export default function HomePage({}: HomePageProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />

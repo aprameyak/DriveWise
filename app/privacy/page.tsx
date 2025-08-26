@@ -1,8 +1,9 @@
 import Header from '../../components/Header'
 import Footer from '../../components/Footer'
 import { Shield, Eye, Lock, Database } from 'lucide-react'
+import type { PrivacyPageProps } from '../../types'
 
-export default function PrivacyPage() {
+export default function PrivacyPage({}: PrivacyPageProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
