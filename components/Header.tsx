@@ -3,8 +3,9 @@
 import Link from 'next/link'
 import { Car, Menu, X } from 'lucide-react'
 import { useState } from 'react'
+import type { HeaderProps } from '../types'
 
-export default function Header() {
+export default function Header({}: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   return (

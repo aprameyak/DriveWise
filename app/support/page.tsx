@@ -11,8 +11,9 @@ import {
   ChevronUp
 } from 'lucide-react'
 import { useState } from 'react'
+import type { FAQItemProps, SupportPageProps } from '../../types'
 
-const FAQItem = ({ question, answer }: { question: string; answer: string }) => {
+const FAQItem = ({ question, answer }: FAQItemProps) => {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
@@ -37,8 +38,8 @@ const FAQItem = ({ question, answer }: { question: string; answer: string }) => 
   )
 }
 
-export default function SupportPage() {
-  const faqs = [
+export default function SupportPage({}: SupportPageProps) {
+  const faqs: FAQItemProps[] = [
     {
       question: "How does DriveWise calculate Total Cost of Ownership (TCO)?",
       answer: "DriveWise uses comprehensive data including depreciation rates, fuel costs, insurance rates by state, maintenance schedules, and tax information to calculate the true cost of owning a vehicle over time. Our algorithms consider your location, driving habits, and ownership duration to provide accurate estimates."
