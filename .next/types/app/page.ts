@@ -1,4 +1,4 @@
-// File: /Users/aprameyakannan/Documents/GitHub/Mobile/DriveWiseAll/DriveWiseAdmin/app/page.tsx
+// File: /Users/aprameyakannan/Documents/GitHub/Mobile/DriveWise/DriveWiseAdmin/app/page.tsx
 import * as entry from '../../../app/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

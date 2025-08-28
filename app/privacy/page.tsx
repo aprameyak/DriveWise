@@ -3,7 +3,7 @@ import Footer from '../../components/Footer'
 import { Shield, Eye, Lock, Database } from 'lucide-react'
 import type { PrivacyPageProps } from '../../types'
 
-export default function PrivacyPage({}: PrivacyPageProps) {
+export default function PrivacyPage(props: PrivacyPageProps): JSX.Element {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -109,54 +109,51 @@ export default function PrivacyPage({}: PrivacyPageProps) {
                 <li>Access controls and authentication measures</li>
                 <li>Secure data storage and backup procedures</li>
               </ul>
-              <p className="text-gray-600">
-                However, no method of transmission over the internet or electronic storage is 100% secure, and we cannot guarantee absolute security.
-              </p>
             </div>
 
             <div className="mb-12">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Your Rights and Choices</h2>
               <p className="text-gray-600 mb-4">
-                You have certain rights regarding your personal information:
+                You have the following rights regarding your personal information:
               </p>
               <ul className="list-disc pl-6 text-gray-600 mb-6">
                 <li><strong>Access:</strong> Request access to your personal information</li>
                 <li><strong>Correction:</strong> Request correction of inaccurate information</li>
                 <li><strong>Deletion:</strong> Request deletion of your personal information</li>
                 <li><strong>Portability:</strong> Request a copy of your data in a portable format</li>
-                <li><strong>Opt-out:</strong> Opt out of certain data collection and communications</li>
+                <li><strong>Opt-out:</strong> Opt out of marketing communications</li>
               </ul>
-              <p className="text-gray-600">
-                To exercise these rights, please contact us at aprameyakannan@gmail.com
-              </p>
             </div>
 
             <div className="mb-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Data Retention</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Cookies and Tracking Technologies</h2>
               <p className="text-gray-600 mb-4">
-                We retain your personal information for as long as necessary to provide our services and fulfill the purposes outlined in this Privacy Policy. We may retain certain information for longer periods if required by law or for legitimate business purposes.
+                We use cookies and similar tracking technologies to enhance your experience:
               </p>
+              <ul className="list-disc pl-6 text-gray-600 mb-6">
+                <li><strong>Essential Cookies:</strong> Required for basic app functionality</li>
+                <li><strong>Analytics Cookies:</strong> Help us understand how users interact with our app</li>
+                <li><strong>Preference Cookies:</strong> Remember your settings and preferences</li>
+              </ul>
             </div>
 
             <div className="mb-12">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Children's Privacy</h2>
               <p className="text-gray-600 mb-4">
-                Our app is not intended for children under the age of 13. We do not knowingly collect personal information from children under 13. If you are a parent or guardian and believe your child has provided us with personal information, please contact us immediately.
+                Our app is not intended for children under 13 years of age. We do not knowingly collect personal information from children under 13. If you are a parent or guardian and believe your child has provided us with personal information, please contact us.
               </p>
             </div>
 
             <div className="mb-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Third-Party Services</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Changes to This Policy</h2>
               <p className="text-gray-600 mb-4">
-                Our app may contain links to third-party websites or services. We are not responsible for the privacy practices of these third parties. We encourage you to review their privacy policies before providing any personal information.
+                We may update this Privacy Policy from time to time. We will notify you of any changes by:
               </p>
-            </div>
-
-            <div className="mb-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Changes to This Privacy Policy</h2>
-              <p className="text-gray-600 mb-4">
-                We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last updated" date. We encourage you to review this Privacy Policy periodically.
-              </p>
+              <ul className="list-disc pl-6 text-gray-600 mb-6">
+                <li>Posting the new Privacy Policy in the app</li>
+                <li>Sending you an email notification</li>
+                <li>Displaying a prominent notice in the app</li>
+              </ul>
             </div>
 
             <div className="mb-12">
@@ -165,62 +162,10 @@ export default function PrivacyPage({}: PrivacyPageProps) {
                 If you have any questions about this Privacy Policy or our data practices, please contact us:
               </p>
               <div className="bg-gray-50 p-6 rounded-lg">
-                <p className="text-gray-600 mb-2">
-                  <strong>Email:</strong> aprameyakannan@gmail.com
-                </p>
-                <p className="text-gray-600 mb-2">
-                  <strong>Address:</strong> DriveWise Privacy Team<br />
-                  123 Innovation Drive<br />
-                  Tech City, TC 12345<br />
-                  United States
-                </p>
+                <p className="text-gray-600 mb-2"><strong>Email:</strong> privacy@drivewise.com</p>
+                <p className="text-gray-600 mb-2"><strong>Address:</strong> DriveWise Inc., 123 Tech Street, San Francisco, CA 94105</p>
+                <p className="text-gray-600"><strong>Phone:</strong> +1 (555) 123-4567</p>
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Privacy Features Highlight */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Our Commitment to Privacy
-            </h2>
-            <p className="text-lg text-gray-600">
-              We're committed to protecting your data and maintaining your trust
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center p-8 bg-white rounded-xl shadow-sm">
-              <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Lock className="w-6 h-6 text-primary-600" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Secure by Design</h3>
-              <p className="text-gray-600">
-                We implement industry-standard security measures to protect your data at every level.
-              </p>
-            </div>
-
-            <div className="text-center p-8 bg-white rounded-xl shadow-sm">
-              <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Eye className="w-6 h-6 text-primary-600" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Transparent Practices</h3>
-              <p className="text-gray-600">
-                We're open about how we collect, use, and protect your information.
-              </p>
-            </div>
-
-            <div className="text-center p-8 bg-white rounded-xl shadow-sm">
-              <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Database className="w-6 h-6 text-primary-600" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">You Control Your Data</h3>
-              <p className="text-gray-600">
-                Access, modify, or delete your personal information at any time.
-              </p>
             </div>
           </div>
         </div>

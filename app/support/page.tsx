@@ -13,14 +13,20 @@ import {
 import { useState } from 'react'
 import type { FAQItemProps, SupportPageProps } from '../../types'
 
-const FAQItem = ({ question, answer }: FAQItemProps) => {
-  const [isOpen, setIsOpen] = useState(false)
+const FAQItem = ({ question, answer }: FAQItemProps): JSX.Element => {
+  const [isOpen, setIsOpen] = useState<boolean>(false)
+
+  const handleToggle = (): void => {
+    setIsOpen(!isOpen)
+  }
 
   return (
     <div className="border-b border-gray-200">
       <button
         className="flex justify-between items-center w-full py-4 text-left focus:outline-none"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={handleToggle}
+        aria-expanded={isOpen}
+        aria-controls={`faq-${question.replace(/\s+/g, '-').toLowerCase()}`}
       >
         <span className="text-lg font-medium text-gray-900">{question}</span>
         {isOpen ? (
@@ -30,7 +36,7 @@ const FAQItem = ({ question, answer }: FAQItemProps) => {
         )}
       </button>
       {isOpen && (
-        <div className="pb-4">
+        <div className="pb-4" id={`faq-${question.replace(/\s+/g, '-').toLowerCase()}`}>
           <p className="text-gray-600">{answer}</p>
         </div>
       )}
@@ -38,7 +44,7 @@ const FAQItem = ({ question, answer }: FAQItemProps) => {
   )
 }
 
-export default function SupportPage({}: SupportPageProps) {
+export default function SupportPage(props: SupportPageProps): JSX.Element {
   const faqs: FAQItemProps[] = [
     {
       question: "How does DriveWise calculate Total Cost of Ownership (TCO)?",
@@ -99,29 +105,79 @@ export default function SupportPage({}: SupportPageProps) {
       {/* Contact Options */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-1 gap-8 max-w-md mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Email Support */}
             <div className="text-center p-8 bg-gray-50 rounded-xl">
               <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mx-auto mb-4">
                 <Mail className="w-6 h-6 text-primary-600" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Get Help</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Email Support</h3>
               <p className="text-gray-600 mb-4">
-                Have a question or need support? Send us an email and we'll get back to you.
+                Get detailed help from our support team
               </p>
               <a 
-                href="mailto:aprameyakannan@gmail.com" 
+                href="mailto:support@drivewise.com" 
                 className="text-primary-600 hover:text-primary-700 font-medium"
               >
-                aprameyakannan@gmail.com
+                support@drivewise.com
+              </a>
+            </div>
+
+            {/* Live Chat */}
+            <div className="text-center p-8 bg-gray-50 rounded-xl">
+              <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <MessageCircle className="w-6 h-6 text-primary-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Live Chat</h3>
+              <p className="text-gray-600 mb-4">
+                Chat with our support team in real-time
+              </p>
+              <button className="text-primary-600 hover:text-primary-700 font-medium">
+                Start Chat
+              </button>
+            </div>
+
+            {/* Help Center */}
+            <div className="text-center p-8 bg-gray-50 rounded-xl">
+              <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <FileText className="w-6 h-6 text-primary-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Help Center</h3>
+              <p className="text-gray-600 mb-4">
+                Browse our comprehensive help articles
+              </p>
+              <a 
+                href="#" 
+                className="text-primary-600 hover:text-primary-700 font-medium"
+              >
+                Browse Articles
               </a>
             </div>
           </div>
         </div>
       </section>
 
+      {/* FAQ Section */}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-lg text-gray-600">
+              Find quick answers to the most common questions about DriveWise
+            </p>
+          </div>
 
-
+          <div className="bg-white rounded-xl shadow-sm">
+            <div className="p-8">
+              {faqs.map((faq, index) => (
+                <FAQItem key={index} question={faq.question} answer={faq.answer} />
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
 
       <Footer />
     </div>
