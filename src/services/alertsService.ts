@@ -53,7 +53,7 @@ class AlertsService {
           id: `price-${Date.now()}-${car.id}`,
           type: 'price_change',
           title: 'Price Change Alert',
-          message: `${car.make} ${car.model} ${car.year} price has ${change.direction} by ${change.percentage}%`,
+          message: `${car.make} ${car.model} ${car.year} price has ${change.change >= 0 ? 'increased' : 'decreased'} by ${Math.abs(change.percentage)}%`,
           carId: car.id,
           priority: 'medium',
           isRead: false,
