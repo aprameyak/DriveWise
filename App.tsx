@@ -4,7 +4,6 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 
-// Import screens
 import LoginScreen from './src/screens/LoginScreen';
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import HomeScreen from './src/screens/HomeScreen';
@@ -14,7 +13,6 @@ import DepreciationExplorerScreen from './src/screens/DepreciationExplorerScreen
 import AlertsScreen from './src/screens/AlertsScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 
-// Import auth store
 import { useAuthStore } from './src/store/authStore';
 import { useUserProfileStore } from './src/store/userProfileStore';
 

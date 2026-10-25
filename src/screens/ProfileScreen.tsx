@@ -78,7 +78,6 @@ const ProfileScreen = () => {
 
     setLoading(true);
     
-    // Update profile
     if (profile) {
       updateProfile({
         zipCode,

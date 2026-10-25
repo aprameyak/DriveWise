@@ -1,9 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 
-// This script would typically use a library like sharp or svg2png
-// For now, we'll create a placeholder that explains the process
-
 console.log('Icon Generation Script for DriveWise');
 console.log('====================================');
 console.log('');
@@ -30,7 +27,6 @@ console.log('');
 console.log('5. For web app, the favicon.svg is already created at: DriveWiseAdmin/public/favicon.svg');
 console.log('');
 
-// Check if the SVG file exists
 const svgPath = path.join(__dirname, '../assets/icon.svg');
 if (fs.existsSync(svgPath)) {
   console.log('✅ SVG icon found at:', svgPath);
@@ -38,7 +34,6 @@ if (fs.existsSync(svgPath)) {
   console.log('❌ SVG icon not found at:', svgPath);
 }
 
-// Check if the web favicon exists
 const webFaviconPath = path.join(__dirname, '../../DriveWiseAdmin/public/favicon.svg');
 if (fs.existsSync(webFaviconPath)) {
   console.log('✅ Web favicon found at:', webFaviconPath);

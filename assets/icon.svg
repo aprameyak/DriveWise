@@ -1,5 +1,4 @@
 <svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Background gradient -->
   <defs>
     <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" style="stop-color:#2563eb;stop-opacity:1" />
@@ -15,19 +14,14 @@
     </linearGradient>
   </defs>
   
-  <!-- Background circle with gradient -->
   <circle cx="512" cy="512" r="512" fill="url(#bgGradient)"/>
   
-  <!-- Car body with gradient -->
   <path d="M200 600 L824 600 L824 680 C824 720 790 750 750 750 L274 750 C234 750 200 720 200 680 L200 600 Z" fill="url(#carGradient)"/>
   
-  <!-- Car roof with gradient -->
   <path d="M250 400 L774 400 L774 600 L250 600 L250 400 Z" fill="url(#carGradient)"/>
   
-  <!-- Windows with darker tint -->
   <path d="M280 420 L744 420 L744 580 L280 580 L280 420 Z" fill="#1e293b" opacity="0.8"/>
   
-  <!-- Wheels with metallic effect -->
   <circle cx="300" cy="750" r="60" fill="#1e293b"/>
   <circle cx="724" cy="750" r="60" fill="#1e293b"/>
   <circle cx="300" cy="750" r="40" fill="#64748b"/>
@@ -35,10 +29,8 @@
   <circle cx="300" cy="750" r="25" fill="#94a3b8"/>
   <circle cx="724" cy="750" r="25" fill="#94a3b8"/>
   
-  <!-- Calculator/Chart elements with gradient -->
   <rect x="350" y="300" width="324" height="200" rx="20" fill="url(#chartGradient)" opacity="0.95"/>
   
-  <!-- Chart bars with improved styling -->
   <rect x="380" y="380" width="30" height="80" fill="white" rx="4"/>
   <rect x="430" y="360" width="30" height="100" fill="white" rx="4"/>
   <rect x="480" y="340" width="30" height="120" fill="white" rx="4"/>
@@ -46,17 +38,13 @@
   <rect x="580" y="370" width="30" height="90" fill="white" rx="4"/>
   <rect x="630" y="320" width="30" height="140" fill="white" rx="4"/>
   
-  <!-- Dollar sign with better typography -->
   <text x="512" y="480" font-family="Arial, sans-serif" font-size="48" font-weight="bold" text-anchor="middle" fill="white" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.3))">$</text>
   
-  <!-- Optimization arrows with improved styling -->
   <path d="M150 200 L200 150 L250 200" stroke="white" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.3))"/>
   <path d="M774 200 L824 150 L874 200" stroke="white" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.3))"/>
   
-  <!-- Headlights with glow effect -->
   <circle cx="220" cy="580" r="15" fill="#fbbf24" filter="drop-shadow(0 0 8px rgba(251,191,36,0.6))"/>
   <circle cx="804" cy="580" r="15" fill="#fbbf24" filter="drop-shadow(0 0 8px rgba(251,191,36,0.6))"/>
   
-  <!-- Subtle shadow for depth -->
   <circle cx="512" cy="512" r="480" fill="none" stroke="rgba(0,0,0,0.1)" stroke-width="2"/>
 </svg>

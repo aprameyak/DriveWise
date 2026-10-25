@@ -1,7 +1,6 @@
 import { CarData } from '../types';
 
 export const CARS_DATA: CarData[] = [
-  // Toyota Camry - Multiple Years
   {
     id: '1',
     make: "Toyota",
@@ -150,7 +149,6 @@ export const CARS_DATA: CarData[] = [
     }
   },
 
-  // Tesla Model 3 - Multiple Years
   {
     id: '2',
     make: "Tesla",
@@ -250,7 +248,6 @@ export const CARS_DATA: CarData[] = [
     }
   },
 
-  // Honda CR-V - Multiple Years
   {
     id: '3',
     make: "Honda",
@@ -350,7 +347,6 @@ export const CARS_DATA: CarData[] = [
     }
   },
 
-  // BMW 3 Series - Multiple Years
   {
     id: '4',
     make: "BMW",
@@ -401,7 +397,6 @@ export const CARS_DATA: CarData[] = [
     }
   },
 
-  // Toyota Prius - Multiple Years
   {
     id: '5',
     make: "Toyota",

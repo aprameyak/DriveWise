@@ -30,7 +30,7 @@ export const YEARS = Array.from({ length: 25 }, (_, i) => 2024 - i);
 export const FUEL_PRICES = {
   gasoline: 3.50,
   diesel: 4.20,
-  electric: 0.12, // per kWh
+  electric: 0.12,
 };
 
 export const INSURANCE_RATES = {

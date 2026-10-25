@@ -31,7 +31,6 @@ const HomeScreen = () => {
       setLoading(true);
       const cars = await dataService.getCarData();
       
-      // Filter cars based on user preferences and filters
       const filteredCars = cars.filter(car => {
         const estimatedPrice = car.price;
         const matchesBudget = estimatedPrice >= profile.budgetRange.min && estimatedPrice <= profile.budgetRange.max;
@@ -42,7 +41,6 @@ const HomeScreen = () => {
         return matchesBudget && matchesPriceRange && matchesFuelType && matchesSize;
       });
 
-      // Calculate TCO for each car
       const carRecommendations = await Promise.all(
         filteredCars.slice(0, 12).map(async (car) => {
           const tco = await calculateTCO({
@@ -57,13 +55,11 @@ const HomeScreen = () => {
 
           if (!tco) return null;
 
-          // Calculate recommendation metrics
           const buyAtMileage = 0;
           const sellAtMileage = profile.annualMileage * profile.ownershipDuration;
           const buyPrice = car.price;
           const sellPrice = tco.resaleValue;
           
-          // Calculate confidence based on various factors
           const reliabilityScore = car.reliability;
           const fuelEfficiencyScore = car.mpg.combined;
           const safetyScore = car.safetyRating;
@@ -93,7 +89,6 @@ const HomeScreen = () => {
         })
       );
 
-      // Sort by TCO and filter out null results
       const validRecommendations = carRecommendations
         .filter((rec): rec is CarRecommendation => rec !== null)
         .sort((a, b) => a.tcoCalculation.totalCost - b.tcoCalculation.totalCost)

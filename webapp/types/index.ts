@@ -1,10 +1,7 @@
-// Component Props Interfaces
 export interface HeaderProps {
-  // Currently no props needed, but can be extended
 }
 
 export interface FooterProps {
-  // Currently no props needed, but can be extended
 }
 
 export interface FAQItemProps {
@@ -13,18 +10,14 @@ export interface FAQItemProps {
 }
 
 export interface SupportPageProps {
-  // Currently no props needed, but can be extended
 }
 
 export interface PrivacyPageProps {
-  // Currently no props needed, but can be extended
 }
 
 export interface HomePageProps {
-  // Currently no props needed, but can be extended
 }
 
-// App-specific types
 export interface CarData {
   id: string
   make: string

@@ -84,7 +84,6 @@ export default function SupportPage(props: SupportPageProps): JSX.Element {
     <div className="min-h-screen bg-gray-50">
       <Header />
       
-      {/* Hero Section */}
       <section className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
@@ -102,11 +101,9 @@ export default function SupportPage(props: SupportPageProps): JSX.Element {
         </div>
       </section>
 
-      {/* Contact Options */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Email Support */}
             <div className="text-center p-8 bg-gray-50 rounded-xl">
               <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mx-auto mb-4">
                 <Mail className="w-6 h-6 text-primary-600" />
@@ -123,7 +120,6 @@ export default function SupportPage(props: SupportPageProps): JSX.Element {
               </a>
             </div>
 
-            {/* Live Chat */}
             <div className="text-center p-8 bg-gray-50 rounded-xl">
               <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mx-auto mb-4">
                 <MessageCircle className="w-6 h-6 text-primary-600" />
@@ -137,7 +133,6 @@ export default function SupportPage(props: SupportPageProps): JSX.Element {
               </button>
             </div>
 
-            {/* Help Center */}
             <div className="text-center p-8 bg-gray-50 rounded-xl">
               <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mx-auto mb-4">
                 <FileText className="w-6 h-6 text-primary-600" />
@@ -157,7 +152,6 @@ export default function SupportPage(props: SupportPageProps): JSX.Element {
         </div>
       </section>
 
-      {/* FAQ Section */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">

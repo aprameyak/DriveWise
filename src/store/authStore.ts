@@ -20,7 +20,6 @@ export const useAuthStore = create<AuthState>()(
       user: null,
 
       login: async (email: string, password: string) => {
-        // For MVP, accept any valid email/password
         if (email.includes('@') && password.length >= 6) {
           set({
             isAuthenticated: true,
@@ -35,7 +34,6 @@ export const useAuthStore = create<AuthState>()(
       },
 
       signup: async (email: string, password: string) => {
-        // For MVP, accept any valid email/password
         if (email.includes('@') && password.length >= 6) {
           set({
             isAuthenticated: true,

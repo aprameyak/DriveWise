@@ -76,7 +76,6 @@ const OnboardingScreen = () => {
   };
 
   const handleComplete = () => {
-    // Validate form data
     if (!formData.annualMileage || !formData.ownershipDuration || 
         !formData.budgetMin || !formData.budgetMax || !formData.zipCode) {
       Alert.alert('Missing Information', 'Please fill in all required fields.');
@@ -85,7 +84,7 @@ const OnboardingScreen = () => {
 
     const userProfile: UserProfile = {
       id: Date.now().toString(),
-      email: 'user@example.com', // In a real app, this would come from auth
+      email: 'user@example.com',
       annualMileage: parseInt(formData.annualMileage),
       usageType: formData.usageType,
       ownershipDuration: parseInt(formData.ownershipDuration),
@@ -239,7 +238,6 @@ const OnboardingScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Progress Bar */}
         <View style={styles.progressContainer}>
           <View style={styles.progressBar}>
             <View 
@@ -254,10 +252,8 @@ const OnboardingScreen = () => {
           </Text>
         </View>
 
-        {/* Step Content */}
         {renderStepContent()}
 
-        {/* Navigation Buttons */}
         <View style={styles.buttonContainer}>
           {currentStep > 0 && (
             <TouchableOpacity style={styles.backButton} onPress={handleBack}>

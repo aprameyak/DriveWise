@@ -5,7 +5,7 @@ import { calculateTCO } from '../utils/calculateTCO';
 class AlertsService {
   private alerts: Alert[] = [];
   private lastCheck: Date | null = null;
-  private readonly CHECK_INTERVAL = 6 * 60 * 60 * 1000; // 6 hours
+  private readonly CHECK_INTERVAL = 6 * 60 * 60 * 1000;
 
   async generateAlerts(userProfile: any): Promise<Alert[]> {
     if (this.shouldSkipCheck()) {
@@ -16,15 +16,12 @@ class AlertsService {
       const cars = await dataService.getCarData();
       const newAlerts: Alert[] = [];
 
-      // Generate price change alerts
       const priceAlerts = await this.generatePriceChangeAlerts(cars, userProfile);
       newAlerts.push(...priceAlerts);
 
-      // Generate buy window alerts
       const buyAlerts = await this.generateBuyWindowAlerts(cars, userProfile);
       newAlerts.push(...buyAlerts);
 
-      // Generate maintenance alerts
       const maintenanceAlerts = await this.generateMaintenanceAlerts(userProfile);
       newAlerts.push(...maintenanceAlerts);
 
@@ -40,7 +37,6 @@ class AlertsService {
   private async generatePriceChangeAlerts(cars: any[], userProfile: any): Promise<Alert[]> {
     const alerts: Alert[] = [];
     
-    // Simulate price changes for demo
     const priceChanges = [
       { carId: 'toyota-camry-2019', change: -500, percentage: -2.5 },
       { carId: 'honda-accord-2021', change: 300, percentage: 1.5 },
@@ -68,7 +64,6 @@ class AlertsService {
   private async generateBuyWindowAlerts(cars: any[], userProfile: any): Promise<Alert[]> {
     const alerts: Alert[] = [];
     
-    // Find cars within budget that are at good buying points
     const affordableCars = cars.filter(car => {
       const estimatedPrice = car.msrp * 0.8;
       return estimatedPrice >= userProfile.budgetRange.min && estimatedPrice <= userProfile.budgetRange.max;
@@ -105,7 +100,6 @@ class AlertsService {
   private async generateMaintenanceAlerts(userProfile: any): Promise<Alert[]> {
     const alerts: Alert[] = [];
     
-    // Simulate maintenance alerts based on user's cars
     const maintenanceItems = [
       { item: 'Oil Change', miles: 500, urgency: 'low' },
       { item: 'Tire Rotation', miles: 1000, urgency: 'medium' },
@@ -113,7 +107,7 @@ class AlertsService {
     ];
 
     for (const item of maintenanceItems) {
-      if (Math.random() > 0.7) { // 30% chance of maintenance alert
+      if (Math.random() > 0.7) {
         alerts.push({
           id: `maintenance-${Date.now()}-${item.item}`,
           type: 'maintenance',

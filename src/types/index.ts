@@ -37,12 +37,12 @@ export interface CarData {
     combined: number;
   };
   size: 'Compact' | 'Midsize' | 'Full-size' | 'SUV' | 'Truck' | 'Luxury';
-  reliability: number; // 1-10 scale
-  safetyRating: number; // 1-5 scale
+  reliability: number;
+  safetyRating: number;
   features: string[];
-  usedPrices: Record<string, number>; // mileage -> price
-  maintenanceByMileage: Record<string, number>; // mileage -> maintenance cost
-  insuranceByState: Record<string, number>; // state -> annual insurance
+  usedPrices: Record<string, number>;
+  maintenanceByMileage: Record<string, number>;
+  insuranceByState: Record<string, number>;
   taxRate: number;
   depreciation: DepreciationPoint[];
   tcoData: TCOData;

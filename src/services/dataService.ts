@@ -1,13 +1,12 @@
 import { CarData } from '../types';
 
-// API endpoints
 const NHTSA_BASE_URL = 'https://vpic.nhtsa.dot.gov/api';
 const CARQUERY_BASE_URL = 'https://www.carqueryapi.com/api/1.0';
 
 export interface FuelPriceData {
   gasoline: number;
   diesel: number;
-  electric: number; // per kWh
+  electric: number;
   lastUpdated: Date;
 }
 
@@ -94,7 +93,7 @@ class DataService {
   private taxRates: TaxRateData[] = [];
   private carData: CarData[] = [];
   private lastFetch: Date | null = null;
-  private readonly CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
+  private readonly CACHE_DURATION = 24 * 60 * 60 * 1000;
 
   async getCarData(): Promise<CarData[]> {
     if (this.shouldUseCache() && this.carData.length > 0) {
@@ -106,7 +105,6 @@ class DataService {
       
       const cars: CarData[] = [];
       
-      // Try CarQuery API first (more comprehensive data)
       try {
         const carQueryCars = await this.fetchFromCarQuery();
         cars.push(...carQueryCars);
@@ -115,7 +113,6 @@ class DataService {
         console.warn('CarQuery API failed, falling back to NHTSA:', error);
       }
       
-      // If CarQuery didn't provide enough data, supplement with NHTSA
       if (cars.length < 20) {
         try {
           const nhtsaCars = await this.fetchFromNHTSA();
@@ -126,9 +123,8 @@ class DataService {
         }
       }
       
-      // Remove duplicates and limit to reasonable number
       const uniqueCars = this.removeDuplicates(cars);
-      this.carData = uniqueCars.slice(0, 50); // Limit to 50 cars
+      this.carData = uniqueCars.slice(0, 50);
       this.lastFetch = new Date();
       
       console.log(`Successfully fetched ${this.carData.length} unique cars from APIs`);
@@ -136,7 +132,6 @@ class DataService {
       
     } catch (error) {
       console.warn('Failed to fetch car data from APIs, using fallback:', error);
-      // Fallback to mock data
       const { ALL_CARS } = await import('../data/cars');
       return ALL_CARS;
     }
@@ -145,12 +140,10 @@ class DataService {
   private async fetchFromCarQuery(): Promise<CarData[]> {
     const cars: CarData[] = [];
     
-    // Get popular makes from CarQuery
     const popularMakes = ['Toyota', 'Honda', 'Ford', 'BMW', 'Tesla', 'Hyundai', 'Mazda', 'Subaru', 'Audi', 'Mercedes-Benz'];
     
     for (const makeName of popularMakes) {
       try {
-        // Get models for this make
         const modelsResponse = await fetch(
           `${CARQUERY_BASE_URL}/?cmd=getModels&make=${encodeURIComponent(makeName)}&year=2024`
         );
@@ -163,12 +156,10 @@ class DataService {
         const modelsData = await modelsResponse.json();
         
         if (modelsData.Models && modelsData.Models.length > 0) {
-          // Take the first few models for each make
           const modelsToProcess = modelsData.Models.slice(0, 4);
           
           for (const model of modelsToProcess) {
             try {
-              // Get detailed specs for this model
               const specsResponse = await fetch(
                 `${CARQUERY_BASE_URL}/?cmd=getTrims&make=${encodeURIComponent(makeName)}&model=${encodeURIComponent(model.model_name)}&year=2024`
               );
@@ -177,9 +168,8 @@ class DataService {
                 const specsData = await specsResponse.json();
                 
                 if (specsData.Trims && specsData.Trims.length > 0) {
-                  const trim = specsData.Trims[0]; // Use first trim for specs
+                  const trim = specsData.Trims[0];
                   
-                  // Create car data for different years
                   const years = [2024, 2023, 2022];
                   
                   for (const year of years) {
@@ -210,7 +200,6 @@ class DataService {
                 }
               }
               
-              // Add delay to respect rate limits
               await new Promise(resolve => setTimeout(resolve, 200));
               
             } catch (error) {
@@ -230,12 +219,10 @@ class DataService {
   private async fetchFromNHTSA(): Promise<CarData[]> {
     const cars: CarData[] = [];
     
-    // Get popular makes
     const popularMakes = ['Toyota', 'Honda', 'Ford', 'BMW', 'Tesla', 'Hyundai', 'Mazda', 'Subaru'];
     
     for (const makeName of popularMakes) {
       try {
-        // Get models for this make
         const modelsResponse = await fetch(
           `${NHTSA_BASE_URL}/vehicles/GetModelsForMake/${makeName}?format=json`
         );
@@ -248,12 +235,10 @@ class DataService {
         const modelsData = await modelsResponse.json();
         
         if (modelsData.Results && modelsData.Results.length > 0) {
-          // Take the first few models for each make
           const modelsToProcess = modelsData.Results.slice(0, 3);
           
           for (const model of modelsToProcess) {
             try {
-              // Get vehicle types for this make/model
               const vehicleTypesResponse = await fetch(
                 `${NHTSA_BASE_URL}/vehicles/GetVehicleTypesForMakeId/${model.Make_ID}?format=json`
               );
@@ -261,7 +246,6 @@ class DataService {
               if (vehicleTypesResponse.ok) {
                 const vehicleTypesData = await vehicleTypesResponse.json();
                 
-                // Create car data for different years
                 const years = [2024, 2023, 2022];
                 
                 for (const year of years) {
@@ -296,7 +280,6 @@ class DataService {
           }
         }
         
-        // Add delay to respect rate limits
         await new Promise(resolve => setTimeout(resolve, 100));
         
       } catch (error) {
@@ -328,12 +311,10 @@ class DataService {
   }
 
   private estimateMPGFromCarQuery(trim: CarQueryModel, make: string): { city: number; highway: number; combined: number } {
-    // Try to get real MPG data from CarQuery
     const cityLkm = parseFloat(trim.model_lkm_city || '0');
     const highwayLkm = parseFloat(trim.model_lkm_highway || '0');
     
     if (cityLkm > 0 && highwayLkm > 0) {
-      // Convert L/100km to MPG
       const cityMPG = Math.round(235.214 / cityLkm);
       const highwayMPG = Math.round(235.214 / highwayLkm);
       const combinedMPG = Math.round((cityMPG + highwayMPG) / 2);
@@ -345,7 +326,6 @@ class DataService {
       };
     }
     
-    // Fallback to estimation
     return this.estimateMPG(make, '');
   }
 
@@ -367,8 +347,6 @@ class DataService {
     }
 
     try {
-      // For now, use realistic mock data
-      // TODO: Integrate with EIA API when you get the API key
       this.fuelPrices = {
         gasoline: 3.85,
         diesel: 4.25,
@@ -389,8 +367,6 @@ class DataService {
     }
 
     try {
-      // For now, use realistic mock data
-      // TODO: Integrate with insurance APIs
       this.insuranceRates = this.getDefaultInsuranceRates();
       this.lastFetch = new Date();
       return this.insuranceRates;
@@ -406,8 +382,6 @@ class DataService {
     }
 
     try {
-      // For now, use realistic mock data
-      // TODO: Integrate with tax APIs
       this.taxRates = this.getDefaultTaxRates();
       this.lastFetch = new Date();
       return this.taxRates;
@@ -419,8 +393,6 @@ class DataService {
 
   async getZipToStateMapping(): Promise<Record<string, string>> {
     try {
-      // For now, return the existing mapping
-      // TODO: Integrate with ZIP code API
       const { ZIP_TO_STATE } = await import('../data/zipToState');
       return ZIP_TO_STATE;
     } catch (error) {
@@ -434,7 +406,6 @@ class DataService {
     return Date.now() - this.lastFetch.getTime() < this.CACHE_DURATION;
   }
 
-  // Helper methods for generating realistic data
   private estimatePrice(make: string, model: string, year: number): number {
     const basePrices: Record<string, number> = {
       'Toyota': 28000,
@@ -459,7 +430,6 @@ class DataService {
   }
 
   private getCarImage(make: string, model: string): string {
-    // Use Unsplash images based on make/model
     const imageMap: Record<string, string> = {
       'Toyota': 'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=500',
       'Honda': 'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=500',
@@ -490,7 +460,7 @@ class DataService {
       'Honda': 31,
       'Ford': 25,
       'BMW': 30,
-      'Tesla': 136, // MPGe
+      'Tesla': 136,
       'Hyundai': 33,
       'Mazda': 30,
       'Subaru': 28,
@@ -654,7 +624,6 @@ class DataService {
     ];
   }
 
-  // Clear cache for testing or when data becomes stale
   clearCache(): void {
     this.fuelPrices = null;
     this.insuranceRates = [];
