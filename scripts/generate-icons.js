@@ -24,7 +24,7 @@ console.log('');
 console.log('4. The SVG file is located at: DriveWise/assets/icon.svg');
 console.log('   Convert this to the required PNG sizes above.');
 console.log('');
-console.log('5. For web app, the favicon.svg is already created at: DriveWiseAdmin/public/favicon.svg');
+console.log('5. For web app, the favicon.svg is already created at: webapp/public/favicon.svg');
 console.log('');
 
 const svgPath = path.join(__dirname, '../assets/icon.svg');
@@ -34,7 +34,7 @@ if (fs.existsSync(svgPath)) {
   console.log('❌ SVG icon not found at:', svgPath);
 }
 
-const webFaviconPath = path.join(__dirname, '../../DriveWiseAdmin/public/favicon.svg');
+const webFaviconPath = path.join(__dirname, '../webapp/public/favicon.svg');
 if (fs.existsSync(webFaviconPath)) {
   console.log('✅ Web favicon found at:', webFaviconPath);
 } else {

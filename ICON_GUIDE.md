@@ -22,8 +22,8 @@ The DriveWise icon features:
 - **Favicon**: `DriveWise/assets/favicon.png` (32x32)
 
 ### Web App (Next.js)
-- **Favicon SVG**: `DriveWiseAdmin/public/favicon.svg` (32x32)
-- **Favicon PNG**: `DriveWiseAdmin/public/favicon.png` (32x32)
+- **Favicon SVG**: `webapp/public/favicon.svg` (32x32)
+- **Favicon PNG**: `webapp/public/favicon.png` (32x32)
 
 ## Configuration
 
