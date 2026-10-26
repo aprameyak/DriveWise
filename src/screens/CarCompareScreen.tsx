@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useUserProfileStore } from '../store/userProfileStore';
 import { dataService } from '../services/dataService';
 import { calculateTCO } from '../utils/calculateTCO';
+import { riskFlags } from '../utils/riskFlags';
 import { CarData } from '../types';
 
 const CarCompareScreen = () => {
@@ -146,6 +147,12 @@ const CarCompareScreen = () => {
           </View>
           <Text style={styles.specText}>Reliability: {car.reliability}/10</Text>
           <Text style={styles.specText}>Size: {car.size}</Text>
+          {riskFlags({ model: `${car.make} ${car.model}`, askingPrice: car.price, reliability: car.reliability * 10 }).map((flag) => (
+            <View key={flag} style={styles.specRow}>
+              <Ionicons name="warning-outline" size={14} color="#f59e0b" />
+              <Text style={styles.specText}>{flag}</Text>
+            </View>
+          ))}
         </View>
 
         {isSelected && compared && (

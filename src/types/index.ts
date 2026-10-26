@@ -129,6 +129,10 @@ export interface NavigationProps {
   DepreciationExplorer: undefined;
   Alerts: undefined;
   Profile: undefined;
+  BuyingTools: undefined;
+  DealCheck: undefined;
+  PriceCheck: undefined;
+  BuyingChecklist: undefined;
 }
 
 export type RootStackParamList = NavigationProps;
@@ -146,4 +150,44 @@ export interface UserPreferences {
     safety: number;
     depreciation: number;
   };
-} 
+}
+
+export interface DealInput {
+  monthlyPayment: number;
+  documentationFee: number;
+  addOns: string[];
+  total: number;
+}
+
+export interface RiskInput {
+  model: string;
+  mileage?: number;
+  askingPrice?: number;
+  reliability?: number;
+}
+
+export interface MarketListing {
+  id: string;
+  model: string;
+  price: number;
+  mileage?: number;
+  year?: number;
+  timestamp: string;
+}
+
+export interface MarketStats {
+  median: number;
+  count: number;
+  min: number;
+  max: number;
+}
+
+export interface BuyingTask {
+  id: string;
+  title: string;
+  category: string;
+  priority: 'low' | 'medium' | 'high';
+  deadline: string;
+  status: 'pending' | 'completed';
+  timestamp: string;
+}

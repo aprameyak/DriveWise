@@ -86,4 +86,30 @@ export const BORDER_RADIUS = {
   lg: 12,
   xl: 16,
   full: 9999,
-}; 
+};
+
+export const DEAL_CHECK_RULES = {
+  maxDocumentationFee: 500,
+  maxAddOns: 2,
+};
+
+export const RISK_RULES = {
+  highMileage: 150000,
+  lowAskingPrice: 8000,
+  minReliability: 75,
+};
+
+export const MODEL_RELIABILITY: Record<string, number> = {
+  'honda-civic': 85,
+  'toyota-camry': 88,
+  'ford-focus': 72,
+  'chevy-cruze': 75,
+};
+
+export const DEFAULT_MODEL_RELIABILITY = 70;
+
+export const TASK_PRIORITIES = [
+  { label: 'Low', value: 'low' },
+  { label: 'Medium', value: 'medium' },
+  { label: 'High', value: 'high' },
+] as const;

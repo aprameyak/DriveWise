@@ -12,6 +12,10 @@ import CarCompareScreen from './src/screens/CarCompareScreen';
 import DepreciationExplorerScreen from './src/screens/DepreciationExplorerScreen';
 import AlertsScreen from './src/screens/AlertsScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
+import BuyingToolsScreen from './src/screens/BuyingToolsScreen';
+import DealCheckScreen from './src/screens/DealCheckScreen';
+import PriceCheckScreen from './src/screens/PriceCheckScreen';
+import BuyingChecklistScreen from './src/screens/BuyingChecklistScreen';
 
 import { useAuthStore } from './src/store/authStore';
 import { useUserProfileStore } from './src/store/userProfileStore';
@@ -38,6 +42,8 @@ const TabNavigator = () => {
             iconName = focused ? 'trending-down' : 'trending-down-outline';
           } else if (route.name === 'Alerts') {
             iconName = focused ? 'notifications' : 'notifications-outline';
+          } else if (route.name === 'BuyingTools') {
+            iconName = focused ? 'clipboard' : 'clipboard-outline';
           } else {
             iconName = 'person-outline';
           }
@@ -93,6 +99,11 @@ const TabNavigator = () => {
         component={AlertsScreen}
         options={{ title: 'Alerts' }}
       />
+      <Tab.Screen 
+        name="BuyingTools" 
+        component={BuyingToolsScreen}
+        options={{ title: 'Buying' }}
+      />
     </Tab.Navigator>
   );
 };
@@ -118,6 +129,21 @@ const AuthNavigator = () => {
         <>
           <Stack.Screen name="Main" component={TabNavigator} />
           <Stack.Screen name="Profile" component={ProfileScreen} />
+          <Stack.Screen 
+            name="DealCheck" 
+            component={DealCheckScreen}
+            options={{ headerShown: true, title: 'Deal Check' }}
+          />
+          <Stack.Screen 
+            name="PriceCheck" 
+            component={PriceCheckScreen}
+            options={{ headerShown: true, title: 'Price Check' }}
+          />
+          <Stack.Screen 
+            name="BuyingChecklist" 
+            component={BuyingChecklistScreen}
+            options={{ headerShown: true, title: 'Buying Checklist' }}
+          />
         </>
       )}
     </Stack.Navigator>
