@@ -16,7 +16,7 @@
     "clsx": "^2.0.0",
     "lucide-react": "^0.294.0",
     "next": "^14.2.35",
-    "postcss": "^8",
+    "postcss": "^8.5.23",
     "react": "^18",
     "react-dom": "^18",
     "tailwindcss": "^3.3.0",
@@ -25,5 +25,11 @@
   "devDependencies": {
     "eslint": "^8",
     "eslint-config-next": "14.2.35"
+  },
+  "overrides": {
+    "postcss": "$postcss",
+    "@next/eslint-plugin-next": {
+      "glob": "^10.5.0"
+    }
   }
 }
