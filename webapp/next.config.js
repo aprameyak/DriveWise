@@ -1,7 +1,7 @@
 const nextConfig = {
-  output: "export",
+  output: process.env.STATIC_EXPORT ? "export" : undefined,
   images: {
-    unoptimized: true,
+    unoptimized: !!process.env.STATIC_EXPORT,
     domains: ['images.unsplash.com', 'via.placeholder.com'],
   },
 }
