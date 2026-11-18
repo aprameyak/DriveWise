@@ -30,6 +30,7 @@
     "postcss": "$postcss",
     "@next/eslint-plugin-next": {
       "glob": "^10.5.0"
-    }
+    },
+    "minimatch@^10.0.0": "^11.0.1"
   }
 }
