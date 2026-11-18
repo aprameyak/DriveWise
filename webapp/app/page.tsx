@@ -19,7 +19,7 @@ export default function HomePage(props: HomePageProps): JSX.Element {
     <div className="min-h-screen bg-gray-50">
       <Header />
       
-      <section className="bg-gradient-to-br from-primary-600 to-primary-800 text-white">
+      <section className="text-white bg-primary-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
